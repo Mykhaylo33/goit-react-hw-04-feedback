@@ -5,22 +5,23 @@ import Statistics from './Statistics/Statistics';
 import Notification from './Notification/Notification';
 
 const App = () => {
-  const [feedback, setFeedback] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  });
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
   const handleButtonClick = (name) => {
-    setFeedback((prevState) => ({
-      ...prevState,
-      [name]: prevState[name] + 1,
-    }));
+    if (name === 'good') {
+      setGood((prevGood) => prevGood + 1);
+    } else if (name === 'neutral') {
+      setNeutral((prevNeutral) => prevNeutral + 1);
+    } else if (name === 'bad') {
+      setBad((prevBad) => prevBad + 1);
+    }
   };
 
-  const { good, neutral, bad } = feedback;
   const totalFeedback = good + neutral + bad;
   const hasFeedback = totalFeedback > 0;
+  const positivePercentage = totalFeedback ? Math.round((good / totalFeedback) * 100) : 0;
 
   return (
     <div
@@ -35,8 +36,9 @@ const App = () => {
       }}
     >
       <Section title="Please leave feedback">
-        <FeedbackOptions options={Object.keys(feedback)} onLeaveFeedback={handleButtonClick} />
+        <FeedbackOptions options={['good', 'neutral', 'bad']} onLeaveFeedback={handleButtonClick} />
       </Section>
+
       <Section title="Statistics">
         {hasFeedback ? (
           <Statistics
@@ -44,7 +46,7 @@ const App = () => {
             neutral={neutral}
             bad={bad}
             total={totalFeedback}
-            positivePercentage={(good / totalFeedback) * 100}
+            positivePercentage={positivePercentage}
           />
         ) : (
           <Notification message="There is no feedback" />
